@@ -7,8 +7,12 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../utils/firebase";
 import { ServerUrl } from "../App";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../redux/userSlice";
 
-function Auth({isModel=false}) {
+function Auth({ isModel = false }) {
+  const dispatch = useDispatch();
+
   const handleGoogleAuth = async () => {
     try {
       console.log("Step 1: Starting Google Login");
@@ -18,10 +22,9 @@ function Auth({isModel=false}) {
 
       console.log("Step 2: Google Login Successful");
 
-      // Logged-in user
       const user = response.user;
 
-      console.log("Step 3: User", user);
+      console.log("Step 3: User:", user);
 
       const name = user.displayName;
       const email = user.email;
@@ -31,18 +34,27 @@ function Auth({isModel=false}) {
       // Send user data to backend
       const result = await axios.post(
         `${ServerUrl}/api/auth/google`,
-        { name, email },
+        {
+          name,
+          email,
+        },
         {
           withCredentials: true,
         }
       );
 
-      console.log("Step 4: Backend Response", result.data);
+      console.log("Step 4: Backend Response:", result.data);
+
+      // Store logged-in user in Redux
+      dispatch(setUserData(result.data));
+
+      console.log("Step 5: User saved in Redux");
+
     } catch (error) {
-      console.log("========== ERROR ==========");
+      console.log("========== GOOGLE LOGIN ERROR ==========");
+
       console.log("Error Code:", error.code);
       console.log("Error Message:", error.message);
-      console.log(error);
 
       if (error.response) {
         console.log("Backend Response:", error.response.data);
@@ -51,17 +63,26 @@ function Auth({isModel=false}) {
       if (error.request) {
         console.log("No response received from backend.");
       }
+
+      console.log(error);
     }
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#f3f3f3] flex items-center justify-center px-6 py-20">
+    <div
+      className={
+        isModel
+          ? "w-full"
+          : "w-full min-h-screen bg-[#f3f3f3] flex items-center justify-center px-6 py-20"
+      }
+    >
       <motion.div
         initial={{ opacity: 0, y: -40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.05 }}
         className="w-full max-w-md p-8 rounded-3xl bg-white shadow-2xl border border-gray-200"
       >
+        {/* Logo */}
         <div className="flex items-center justify-center gap-3 mb-6">
           <div className="bg-black text-white p-2 rounded-lg">
             <BsRobot size={18} />
@@ -72,6 +93,7 @@ function Auth({isModel=false}) {
           </h2>
         </div>
 
+        {/* Heading */}
         <h1 className="text-2xl md:text-3xl font-semibold text-center leading-snug mb-4">
           Continue with{" "}
           <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full inline-flex items-center gap-2">
@@ -80,11 +102,13 @@ function Auth({isModel=false}) {
           </span>
         </h1>
 
+        {/* Description */}
         <p className="text-gray-500 text-center text-sm md:text-base leading-relaxed mb-8">
           Sign in to start AI-powered mock interviews, track your progress,
           and unlock detailed performance insights.
         </p>
 
+        {/* Google Login */}
         <motion.button
           onClick={handleGoogleAuth}
           whileHover={{ opacity: 0.9, scale: 1.03 }}
