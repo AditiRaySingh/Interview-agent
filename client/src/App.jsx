@@ -31,9 +31,12 @@ function App() {
 
         dispatch(setUserData(result.data));
       } catch (error) {
-        console.error("Current user error:", error);
-        dispatch(setUserData(null));
-      }
+  if (error.response?.status !== 401) {
+    console.error("Current user error:", error);
+  }
+
+  dispatch(setUserData(null));
+}
     };
 
     getUser();
