@@ -14,7 +14,7 @@ import { setUserData } from "./redux/userSlice.js";
 
 export const ServerUrl =
   import.meta.env.VITE_SERVER_URL ||
-  "http://localhost:3000";
+  "https://interview-agent-epvi.onrender.com";
 
 function App() {
   const dispatch = useDispatch();
