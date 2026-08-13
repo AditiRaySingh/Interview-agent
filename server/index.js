@@ -21,7 +21,7 @@ const allowedOrigins = [
   "http://localhost:5173",
 
   // Replace this with your REAL deployed frontend URL
-  "https://YOUR-FRONTEND-DOMAIN.vercel.app",
+  "https://interview-agent-1client.onrender.com",
 ];
 
 app.use(
