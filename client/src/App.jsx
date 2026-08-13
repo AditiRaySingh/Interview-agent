@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import Home from "./Pages/Home.jsx";
 import Auth from "./Pages/Auth.jsx";
@@ -23,7 +23,7 @@ function App() {
     const getUser = async () => {
       try {
         const result = await axios.get(
-          ServerUrl + "/api/user/current-user",
+          `${ServerUrl}/api/user/current-user`,
           {
             withCredentials: true,
           }
@@ -31,12 +31,13 @@ function App() {
 
         dispatch(setUserData(result.data));
       } catch (error) {
-  if (error.response?.status !== 401) {
-    console.error("Current user error:", error);
-  }
+        // 401 is normal when user is not logged in
+        if (error.response?.status !== 401) {
+          console.error("Current user error:", error);
+        }
 
-  dispatch(setUserData(null));
-}
+        dispatch(setUserData(null));
+      }
     };
 
     getUser();
